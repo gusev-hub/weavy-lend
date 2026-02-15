@@ -16,38 +16,80 @@ import { FAQ } from './components/FAQ';
 import { FinalCTA } from './components/FinalCTA';
 import { Footer } from './components/Footer';
 
-export type Theme = 'light' | 'dark' | 'system';
+export type Theme = 'light' | 'dark';
+
+const isStoredTheme = (value: string | null): value is Theme =>
+  value === 'light' || value === 'dark';
+
+const getSystemTheme = (): Theme =>
+  window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 
 const App: React.FC = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+  const [viewportWidth, setViewportWidth] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth : 1440
+  );
   const [theme, setTheme] = useState<Theme>(() => {
-    return (localStorage.getItem('theme') as Theme) || 'system';
+    const storedTheme = localStorage.getItem('theme');
+    return isStoredTheme(storedTheme) ? storedTheme : getSystemTheme();
+  });
+  const [isThemeOverridden, setIsThemeOverridden] = useState<boolean>(() => {
+    const storedTheme = localStorage.getItem('theme');
+    return isStoredTheme(storedTheme);
   });
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+    let isTicking = false;
+
+    const updateViewportState = () => {
+      setScrollY(window.scrollY);
+      setViewportWidth(window.innerWidth);
+      isTicking = false;
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    const handleScroll = () => {
+      if (isTicking) return;
+      isTicking = true;
+      window.requestAnimationFrame(updateViewportState);
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
   }, []);
 
   useEffect(() => {
+    if (isThemeOverridden) return;
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const applySystemTheme = () => setTheme(media.matches ? 'dark' : 'light');
+    media.addEventListener('change', applySystemTheme);
+    return () => media.removeEventListener('change', applySystemTheme);
+  }, [isThemeOverridden]);
+
+  useEffect(() => {
     const root = window.document.documentElement;
-    if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      root.classList.remove('light', 'dark');
-      root.classList.add(systemTheme);
-    } else {
-      root.classList.remove('light', 'dark');
-      root.classList.add(theme);
-    }
-    localStorage.setItem('theme', theme);
+    root.classList.remove('light', 'dark');
+    root.classList.add(theme);
   }, [theme]);
+
+  const handleThemeChange = (nextTheme: Theme) => {
+    setTheme(nextTheme);
+    setIsThemeOverridden(true);
+    localStorage.setItem('theme', nextTheme);
+  };
 
   return (
     <div className="min-h-screen bg-softzinc dark:bg-darkzinc text-zinc-900 dark:text-zinc-100 selection:bg-artevrika selection:text-white transition-colors duration-500">
-      <Navbar isScrolled={isScrolled} theme={theme} setTheme={setTheme} />
+      <Navbar
+        scrollY={scrollY}
+        viewportWidth={viewportWidth}
+        theme={theme}
+        setTheme={handleThemeChange}
+      />
       <main className="flex flex-col">
         <Hero />
         <PainPoints />

@@ -1,8 +1,6 @@
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Minus } from 'lucide-react';
-import { COLORS } from '../constants';
 
 const FAQS = [
   {
@@ -36,40 +34,46 @@ export const FAQ: React.FC = () => {
         <h2 className="text-[32px] md:text-[52px] font-heading font-bold mb-16 text-center tracking-tighter dark:text-white text-[#1c3e42] uppercase">Частые вопросы</h2>
         
         <div className="space-y-6">
-          {FAQS.map((faq, i) => (
-            <div key={i} className="border border-zinc-200 dark:border-zinc-800 rounded-[2rem] overflow-hidden bg-zinc-50/50 dark:bg-zinc-900/20 backdrop-blur-sm transition-all duration-300">
-              <button 
-                onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                className="w-full p-8 md:p-10 flex items-center justify-between text-left hover:bg-white dark:hover:bg-zinc-800/30 transition-colors"
+          {FAQS.map((faq, i) => {
+            const isOpen = openIndex === i;
+
+            return (
+              <div
+                key={i}
+                className="rounded-[2rem] overflow-hidden border border-[#7fa398]/70 dark:border-[#2b5a50]/80 bg-[#d9e9e2] dark:bg-[#0f2420]/85 shadow-[0_12px_28px_rgba(14,46,38,0.08)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.38)] transition-all duration-300 hover:ring-[8px] hover:ring-[#f25151]/28 hover:shadow-[0_0_0_1px_rgba(242,81,81,0.28),0_0_28px_rgba(242,81,81,0.22)]"
               >
-                <span className="font-heading font-bold text-[18px] md:text-[22px] pr-8 dark:text-white text-zinc-900 tracking-tight leading-tight font-sans">{faq.q}</span>
-                <div 
-                  className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center border flex-shrink-0 transition-all duration-500 ${
-                    openIndex === i 
-                      ? 'bg-terracotta border-terracotta text-white rotate-180' 
-                      : 'border-zinc-200 dark:border-zinc-700 dark:text-white text-zinc-900'
+                <button
+                  onClick={() => setOpenIndex(isOpen ? null : i)}
+                  className="group w-full p-8 md:p-10 flex items-center justify-between text-left bg-[linear-gradient(115deg,#245458_0%,#1a3f42_55%,#143735_100%)] dark:bg-[linear-gradient(115deg,#183e41_0%,#113235_55%,#0d2728_100%)] hover:brightness-105 transition-[filter] duration-300"
+                >
+                  <span className="font-heading font-bold text-[18px] md:text-[22px] pr-8 text-white tracking-tight leading-tight font-sans">
+                    {faq.q}
+                  </span>
+                  <div
+                    className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center border flex-shrink-0 transition-all duration-300 ${
+                      isOpen
+                        ? 'bg-artevrika border-artevrika text-white'
+                        : 'border-white/45 bg-white/10 text-white group-hover:bg-white/16'
+                    }`}
+                  >
+                    {isOpen ? <Minus size={24} strokeWidth={3} /> : <Plus size={24} strokeWidth={3} />}
+                  </div>
+                </button>
+
+                <div
+                  className={`grid transition-[grid-template-rows,opacity] duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                    isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
                   }`}
                 >
-                  {openIndex === i ? <Minus size={24} strokeWidth={3} /> : <Plus size={24} strokeWidth={3} />}
-                </div>
-              </button>
-              
-              <AnimatePresence>
-                {openIndex === i && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
-                  >
-                    <div className="p-8 md:p-10 pt-0 text-zinc-500 dark:text-zinc-400 font-normal leading-relaxed text-[16px] border-t border-zinc-100 dark:border-zinc-800/50 mt-4 font-sans">
+                  <div className="overflow-hidden">
+                    <div className="border-t border-[#9ec2b7]/75 dark:border-[#355f56]/90 bg-[linear-gradient(160deg,#eaf4ef_0%,#dceae4_100%)] dark:bg-[linear-gradient(160deg,#4c6059_0%,#566b63_100%)] p-8 md:p-10 text-[#30504a] dark:text-[#d2e2da] font-normal leading-relaxed text-[16px] font-sans">
                       {faq.a}
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

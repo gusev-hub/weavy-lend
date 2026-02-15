@@ -51,7 +51,7 @@ const TIERS = [
 
 export const Pricing: React.FC = () => {
   return (
-    <section id="pricing" className="relative py-24 bg-[#163338] dark:bg-magic-mesh transition-colors overflow-hidden">
+    <section id="pricing" className="relative py-24 bg-[#122027] dark:bg-[#122027] transition-colors overflow-hidden">
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
         <motion.div
           animate={{ x: [0, 120, -40, 0], y: [0, -90, 40, 0], rotate: 360 }}
@@ -67,7 +67,10 @@ export const Pricing: React.FC = () => {
       </div>
 
       <div className="container-fluid relative z-10">
-        <h2 className="text-[32px] md:text-[52px] font-heading font-bold mb-20 text-center tracking-tighter leading-none uppercase text-[#1c3e42] dark:text-white">Формат <span className="inline-flex whitespace-nowrap px-[0.12em] -mx-[0.12em] pb-[0.06em] bg-gradient-to-r from-artevrika via-[#ffbb00] via-terracotta via-[#ffbb00] to-artevrika bg-[length:300%_auto] animate-shimmer bg-clip-text text-transparent italic leading-[1.05] drop-shadow-[0_0_15px_rgba(242,81,81,0.2)] underline decoration-terracotta/40 underline-offset-[0.14em] [text-decoration-thickness:0.06em]">участия</span></h2>
+        <h2 className="text-[32px] md:text-[52px] font-heading font-bold mb-20 text-center tracking-tighter leading-none uppercase">
+          <span className="text-white">Формат</span>{' '}
+          <span className="inline-flex whitespace-nowrap px-[0.12em] -mx-[0.12em] pb-[0.06em] bg-gradient-to-r from-artevrika via-[#ffbb00] via-terracotta via-[#ffbb00] to-artevrika bg-[length:300%_auto] animate-shimmer bg-clip-text text-transparent italic leading-[1.05] drop-shadow-[0_0_15px_rgba(242,81,81,0.2)] underline decoration-terracotta/40 underline-offset-[0.14em] [text-decoration-thickness:0.06em]">участия</span>
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
           {TIERS.map((tier, i) => (

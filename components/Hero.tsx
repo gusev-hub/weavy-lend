@@ -393,8 +393,17 @@ const HeroInner: React.FC = () => {
       <ReactFlow nodes={nodes} edges={edges} onNodesChange={onNodesChange} nodeTypes={nodeTypes} proOptions={{ hideAttribution: true }} panOnDrag={false} zoomOnScroll={false} nodesDraggable={true} panOnScroll={false} preventScrolling={false} minZoom={0.2} maxZoom={1.2}>
         <Background variant={BackgroundVariant.Dots} gap={40} size={2.5} color={isDarkMode ? "#1f1f23" : "#d1d5db"} />
       </ReactFlow>
-      <div className="absolute bottom-8 left-8 z-[100]">
-        <button onClick={handleViewportToggle} className="w-12 h-12 flex items-center justify-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-2xl shadow-2xl text-zinc-500 hover:text-terracotta transition-all"><LayoutDashboard size={20} /></button>
+      <div className="absolute inset-y-0 right-4 md:right-6 z-40 pointer-events-none">
+        <div className="sticky top-1/2 -translate-y-1/2 w-12 rounded-2xl overflow-hidden bg-white/18 dark:bg-white/8 backdrop-blur-2xl backdrop-saturate-200 border border-white/30 dark:border-white/20 shadow-[0_18px_45px_rgba(0,0,0,0.28)] pointer-events-auto">
+          <button
+            onClick={handleViewportToggle}
+            aria-label="Выровнять ноды"
+            title="Выровнять ноды"
+            className="group w-12 h-12 flex items-center justify-center bg-white/8 dark:bg-white/[0.03] hover:bg-white/20 dark:hover:bg-white/[0.08] text-zinc-700 dark:text-zinc-300 hover:text-[#f25151] transition-colors"
+          >
+            <LayoutDashboard size={20} className="transition-colors group-hover:text-[#f25151]" />
+          </button>
+        </div>
       </div>
     </div>
   );

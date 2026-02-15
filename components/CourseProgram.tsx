@@ -23,6 +23,7 @@ const GLASS_STYLE = `bg-white/70 dark:bg-[#121214]/70 backdrop-blur-2xl ${BORDER
 // Module node settings
 const NODE_WIDTH = 450;
 const NODE_HEIGHT = 480;
+const ALIGN_EPSILON = 0.5;
 
 const ModuleNode = ({ data }: any) => (
   <div className={`w-[${NODE_WIDTH}px] min-h-[${NODE_HEIGHT}px] p-8 rounded-[3rem] ${GLASS_STYLE} relative group cursor-grab active:cursor-grabbing flex flex-col justify-between`}>
@@ -111,6 +112,7 @@ const MODULES_DATA = [
 const CourseProgramInner: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [viewportWidth, setViewportWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const [viewportMode, setViewportMode] = useState<'width' | 'height'>('width');
   const { fitView } = useReactFlow();
 
   const cols = viewportWidth < 900 ? 1 : viewportWidth < 1440 ? 2 : 3;
@@ -180,6 +182,10 @@ const CourseProgramInner: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges] = useEdgesState(initialEdges);
 
+  const initialNodePositions = useMemo(() => {
+    return new Map(initialNodes.map((node) => [node.id, node.position]));
+  }, [initialNodes]);
+
   const restoreDefaultViewport = useCallback((duration = 800) => {
     fitView({
       padding: 0.05,
@@ -189,12 +195,51 @@ const CourseProgramInner: React.FC = () => {
     });
   }, [fitView]);
 
+  const isLayoutAligned = useMemo(() => {
+    if (nodes.length !== initialNodes.length) return false;
+
+    return nodes.every((node) => {
+      const initialPos = initialNodePositions.get(node.id);
+      if (!initialPos) return false;
+
+      return (
+        Math.abs(node.position.x - initialPos.x) <= ALIGN_EPSILON &&
+        Math.abs(node.position.y - initialPos.y) <= ALIGN_EPSILON
+      );
+    });
+  }, [initialNodePositions, initialNodes.length, nodes]);
+
+  const fitAllNodes = useCallback((duration = 700) => {
+    fitView({
+      nodes: initialNodes,
+      padding: 0.12,
+      duration,
+      minZoom: 0.1,
+      maxZoom: 1.5,
+    });
+  }, [fitView, initialNodes]);
+
+  const applyViewportMode = useCallback((mode: 'width' | 'height', duration = 700) => {
+    if (mode === 'height') {
+      fitAllNodes(duration);
+      return;
+    }
+    restoreDefaultViewport(duration);
+  }, [fitAllNodes, restoreDefaultViewport]);
+
   const handleResetLayout = useCallback(() => {
-    // Rebuild node layout for current viewport width.
-    setNodes(initialNodes);
-    // After ReactFlow applies positions, restore camera position + zoom.
-    requestAnimationFrame(() => requestAnimationFrame(() => restoreDefaultViewport(700)));
-  }, [initialNodes, restoreDefaultViewport, setNodes]);
+    if (!isLayoutAligned) {
+      // If layout is broken, always restore node grid first.
+      setNodes(initialNodes);
+      requestAnimationFrame(() => requestAnimationFrame(() => applyViewportMode(viewportMode, 700)));
+      return;
+    }
+
+    // If layout is already aligned, toggle viewport mode: width <-> height.
+    const nextMode = viewportMode === 'width' ? 'height' : 'width';
+    setViewportMode(nextMode);
+    requestAnimationFrame(() => applyViewportMode(nextMode, 700));
+  }, [applyViewportMode, initialNodes, isLayoutAligned, setNodes, viewportMode]);
 
   const handleFocusTop = useCallback(() => {
     const section = containerRef.current?.closest('section');
@@ -228,6 +273,7 @@ const CourseProgramInner: React.FC = () => {
     window.setTimeout(() => {
       setNodes(initialNodes);
       requestAnimationFrame(() => requestAnimationFrame(() => restoreDefaultViewport(650)));
+      setViewportMode('width');
     }, 560);
   }, [cols, fitView, initialNodes, restoreDefaultViewport, setNodes]);
 
@@ -243,11 +289,13 @@ const CourseProgramInner: React.FC = () => {
     window.setTimeout(() => {
       setNodes(initialNodes);
       requestAnimationFrame(() => requestAnimationFrame(() => restoreDefaultViewport(650)));
+      setViewportMode('width');
     }, 500);
   }, [initialNodes, restoreDefaultViewport, setNodes]);
 
   useEffect(() => {
     setNodes(initialNodes);
+    setViewportMode('width');
     const timer = setTimeout(() => {
         restoreDefaultViewport(800);
     }, 150);
@@ -310,8 +358,8 @@ const CourseProgramInner: React.FC = () => {
           </button>
           <button
             onClick={handleResetLayout}
-            aria-label="Расставить ноды"
-            title="Расставить ноды"
+            aria-label={!isLayoutAligned ? 'Расставить ноды' : viewportMode === 'width' ? 'Показать ноды по высоте' : 'Показать ноды по ширине'}
+            title={!isLayoutAligned ? 'Расставить ноды' : viewportMode === 'width' ? 'Показать ноды по высоте' : 'Показать ноды по ширине'}
             className="group w-12 h-12 flex items-center justify-center bg-white/8 dark:bg-white/[0.03] hover:bg-white/20 dark:hover:bg-white/[0.08] text-zinc-700 dark:text-zinc-300 hover:text-[#f25151] transition-colors"
           >
             <LayoutDashboard size={20} className="transition-colors group-hover:text-[#f25151]" />
