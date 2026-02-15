@@ -40,7 +40,7 @@ export const FAQ: React.FC = () => {
             return (
               <div
                 key={i}
-                className="rounded-[2rem] overflow-hidden border border-[#7fa398]/70 dark:border-[#2b5a50]/80 bg-[#d9e9e2] dark:bg-[#0f2420]/85 shadow-[0_12px_28px_rgba(14,46,38,0.08)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.38)] transition-all duration-300 hover:ring-[8px] hover:ring-[#f25151]/28 hover:shadow-[0_0_0_1px_rgba(242,81,81,0.28),0_0_28px_rgba(242,81,81,0.22)]"
+                className="rounded-[2rem] overflow-hidden border border-[#7fa398]/70 dark:border-[#2b5a50]/80 bg-[#d9e9e2] dark:bg-[#0f2420]/85 shadow-[0_12px_28px_rgba(14,46,38,0.08)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.38)] transition-all duration-300 hover:ring-[8px] hover:ring-[#f25151]/30 hover:border-[#f25151]/40 hover:shadow-[0_0_28px_rgba(242,81,81,0.26)]"
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : i)}

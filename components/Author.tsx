@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Instagram, Linkedin, Send } from 'lucide-react';
+import { Instagram, Send } from 'lucide-react';
 
 const AUTHOR_PHOTO_PRIMARY = 'https://optim.tildacdn.com/tild3335-6130-4166-b162-643831633864/-/cover/522x736/center/center/-/format/webp/OBA_9808_1.jpg.webp';
 const AUTHOR_PHOTO_FALLBACK = 'https://thb.tildacdn.pro/tild3833-3663-4633-b433-613162616563/-/empty/P145524222.jpg';
@@ -53,7 +53,6 @@ export const Author: React.FC = () => {
             </p>
             <div className="flex items-center justify-center md:justify-start gap-6 pt-6">
               <a href="#" className="p-4 rounded-full bg-white/5 text-zinc-200 hover:bg-artevrika hover:text-white transition-all shadow-lg"><Instagram size={28} /></a>
-              <a href="#" className="p-4 rounded-full bg-white/5 text-zinc-200 hover:bg-artevrika hover:text-white transition-all shadow-lg"><Linkedin size={28} /></a>
               <a href="#" className="p-4 rounded-full bg-white/5 text-zinc-200 hover:bg-artevrika hover:text-white transition-all shadow-lg"><Send size={28} /></a>
             </div>
           </div>

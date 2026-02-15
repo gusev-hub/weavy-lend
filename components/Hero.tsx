@@ -411,7 +411,7 @@ const HeroInner: React.FC = () => {
 
 export const Hero: React.FC = () => {
   return (
-    <section id="hero" className="relative h-[100dvh] pt-28 overflow-hidden flex flex-col transition-colors duration-500 bg-white dark:bg-magic-mesh">
+    <section id="hero" className="relative w-screen max-w-[100vw] h-[100dvh] pt-28 overflow-hidden flex flex-col transition-colors duration-500 bg-white dark:bg-magic-mesh">
       {/* Animated Magical Layers */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
         {/* Slow spinning gradient orb 1 */}
@@ -445,7 +445,7 @@ export const Hero: React.FC = () => {
         initial={{ y: 0, opacity: 0.8 }}
         animate={{ y: [0, 6, 0], opacity: [0.8, 1, 0.8] }}
         transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute bottom-5 left-1/2 z-20 -translate-x-1/2 flex flex-col items-center gap-2 text-zinc-600 dark:text-zinc-300 hover:text-terracotta transition-colors"
+        className="absolute bottom-5 inset-x-0 mx-auto w-fit z-20 flex flex-col items-center gap-2 text-zinc-600 dark:text-zinc-300 hover:text-terracotta transition-colors"
       >
         <div className="relative h-7 w-7 flex items-center justify-center">
           <Mouse size={22} strokeWidth={1.8} />
