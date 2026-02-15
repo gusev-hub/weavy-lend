@@ -1,0 +1,248 @@
+{
+  "main": {
+    "id": "7b7ce320bc5ed577",
+    "type": "split",
+    "children": [
+      {
+        "id": "babcf87db27b0caf",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d281670635992c30",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "Новая вкладка"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "9b9d523be9ddc369",
+    "type": "split",
+    "children": [
+      {
+        "id": "8389ac0f5b6de9f2",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "385cdc9060389c55",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Файловый менеджер"
+            }
+          },
+          {
+            "id": "35a7f587ba859471",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Поиск"
+            }
+          },
+          {
+            "id": "ad7c7809b08ade27",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Закладки"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "448b297d90ee4b85",
+    "type": "split",
+    "children": [
+      {
+        "id": "f0f097e7bfb1b996",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "dd625378eaab160f",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "docs/deep-research-report Онлайн-курс по Weavy.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Обратные ссылки для deep-research-report Онлайн-курс по Weavy"
+            }
+          },
+          {
+            "id": "b12930be3568eb11",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "docs/deep-research-report Онлайн-курс по Weavy.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Исходящие ссылки из deep-research-report Онлайн-курс по Weavy"
+            }
+          },
+          {
+            "id": "ac5b7f4dd1d81e21",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Теги"
+            }
+          },
+          {
+            "id": "09833480bb5cf47e",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Все свойства"
+            }
+          },
+          {
+            "id": "276e7ab082f3e518",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "docs/deep-research-report Онлайн-курс по Weavy.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Структура deep-research-report Онлайн-курс по Weavy"
+            }
+          },
+          {
+            "id": "14258b71c5a36d17",
+            "type": "leaf",
+            "state": {
+              "type": "footnotes",
+              "state": {
+                "file": "docs/deep-research-report Онлайн-курс по Weavy.md"
+              },
+              "icon": "lucide-file-signature",
+              "title": "Сноски"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Меню быстрого перехода": false,
+      "graph:Граф": false,
+      "canvas:Создать новый холст": false,
+      "daily-notes:Сегодняшняя заметка": false,
+      "templates:Вставить шаблон": false,
+      "command-palette:Открыть палитру команд": false,
+      "bases:Создать новую базу": false,
+      "audio-recorder:Начать/остановить запись": false,
+      "markdown-importer:Импорт Markdown-файлов": false,
+      "workspaces:Пространства": false,
+      "publish:Публикация изменений": false,
+      "zk-prefixer:Создать заметку с уникальным идентификатором": false
+    }
+  },
+  "active": "d281670635992c30",
+  "lastOpenFiles": [
+    "node_modules/@alloc/quick-lru/readme.md",
+    "node_modules/@alloc/quick-lru/package.json",
+    "node_modules/@alloc/quick-lru/license",
+    "node_modules/@alloc/quick-lru/index.js",
+    "node_modules/@alloc/quick-lru/index.d.ts",
+    "node_modules/@alloc/quick-lru",
+    "node_modules/@alloc",
+    "node_modules/@tailwindcss/postcss/dist/index.mjs",
+    "node_modules/@tailwindcss/postcss/dist/index.js",
+    "node_modules/@tailwindcss/postcss/dist/index.d.ts",
+    "node_modules/@tailwindcss/postcss/dist/index.d.mts",
+    "node_modules/@tailwindcss/postcss/README.md",
+    "node_modules/@tailwindcss/oxide-darwin-arm64/README.md",
+    "node_modules/@tailwindcss/node/README.md",
+    "node_modules/tapable/README.md",
+    "node_modules/lightningcss-darwin-arm64/README.md",
+    "node_modules/detect-libc/README.md",
+    "node_modules/graceful-fs/README.md",
+    "node_modules/magic-string/README.md",
+    "node_modules/enhanced-resolve/README.md",
+    "node_modules/lightningcss/README.md",
+    "node_modules/jiti/README.md",
+    "node_modules/tailwindcss/README.md",
+    "node_modules/fsevents/README.md",
+    "node_modules/@esbuild/darwin-arm64/README.md",
+    "node_modules/react-dom/README.md",
+    "node_modules/vite/README.md",
+    "node_modules/vite/LICENSE.md",
+    "node_modules/@types/babel__core/README.md",
+    "node_modules/typescript/SECURITY.md",
+    "node_modules/typescript/README.md",
+    "node_modules/caniuse-lite/README.md",
+    "node_modules/zustand/readme.md",
+    "node_modules/d3-selection/README.md",
+    "node_modules/@types/node/README.md",
+    "node_modules/motion-utils/LICENSE.md",
+    "public/og-image.webp",
+    "public/author/alexey-gusev.webp",
+    "public/cases/materials-after.webp",
+    "public/cases/materials-before.webp",
+    "public/cases/relight-after.webp",
+    "public/cases/relight-before.webp",
+    "public/cases/plan-to-3d-after.webp",
+    "public/cases/plan-to-3d-before.webp",
+    "public/cases/virtual-staging-after.webp",
+    "public/cases/virtual-staging-before.webp"
+  ]
+}
