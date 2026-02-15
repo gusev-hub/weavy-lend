@@ -1,14 +1,28 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { MoveHorizontal, Sparkles } from 'lucide-react';
 
 interface CaseItemProps {
+  id: number;
   before: string;
   after: string;
   title: string;
   description: string;
   badge: string;
+  thumbnailImage?: string;
+  slides?: string[];
+}
+
+interface PlanTo3DCardProps {
+  planImage: string;
+  renderImage: string;
+  thumbnailImage?: string;
+  caption: string;
+  planAlt: string;
+  renderAlt: string;
+  title: string;
+  description: string;
 }
 
 const BeforeAfterSlider: React.FC<CaseItemProps> = ({ before, after, title, description, badge }) => {
@@ -86,33 +100,245 @@ const BeforeAfterSlider: React.FC<CaseItemProps> = ({ before, after, title, desc
   );
 };
 
+const PlanTo3DCard: React.FC<PlanTo3DCardProps> = ({
+  planImage,
+  renderImage,
+  thumbnailImage,
+  caption,
+  planAlt,
+  renderAlt,
+  title,
+  description,
+}) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
+  const [isVisible, setIsVisible] = useState(false);
+  const [perspective, setPerspective] = useState(2200);
+  const [maxRotateX, setMaxRotateX] = useState(22);
+
+  useEffect(() => {
+    const updateForViewport = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        setPerspective(1400);
+        setMaxRotateX(22);
+        return;
+      }
+      if (width < 1024) {
+        setPerspective(1800);
+        setMaxRotateX(22);
+        return;
+      }
+      setPerspective(2200);
+      setMaxRotateX(22);
+    };
+
+    updateForViewport();
+    window.addEventListener('resize', updateForViewport);
+    return () => window.removeEventListener('resize', updateForViewport);
+  }, []);
+
+  useEffect(() => {
+    if (!shouldReduceMotion || !cardRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.2 },
+    );
+
+    observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, [shouldReduceMotion]);
+
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ['end end', 'center center'],
+  });
+
+  const planRotateXRaw = useTransform(scrollYProgress, [0, 0.25, 0.58, 1], [0, 0, maxRotateX, maxRotateX]);
+  const planScaleRaw = useTransform(scrollYProgress, [0, 0.25, 0.58, 1], [1, 1, 0.97, 0.97]);
+  const planOpacityRaw = useTransform(scrollYProgress, [0, 0.75, 0.9, 1], [1, 1, 0, 0]);
+  const renderOpacityRaw = useTransform(scrollYProgress, [0, 0.9, 1], [0, 0, 1]);
+  const renderScaleRaw = useTransform(scrollYProgress, [0, 1], [1, 1]);
+
+  const planRotateX = useSpring(planRotateXRaw, { stiffness: 110, damping: 22, mass: 0.6 });
+  const planScale = useSpring(planScaleRaw, { stiffness: 110, damping: 22, mass: 0.6 });
+  const planOpacity = useSpring(planOpacityRaw, { stiffness: 120, damping: 24, mass: 0.55 });
+  const renderOpacity = useSpring(renderOpacityRaw, { stiffness: 120, damping: 24, mass: 0.55 });
+  const renderScale = useSpring(renderScaleRaw, { stiffness: 110, damping: 22, mass: 0.6 });
+  const thumbnailOpacityRaw = useTransform(scrollYProgress, [0, 0.88, 0.95, 1], [0, 0, 1, 1]);
+  const thumbnailOpacity = useSpring(thumbnailOpacityRaw, { stiffness: 120, damping: 24, mass: 0.55 });
+
+  return (
+    <div className="flex flex-col gap-6 group">
+      <div
+        ref={cardRef}
+        className="relative aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden bg-zinc-900 shadow-2xl border border-zinc-200 dark:border-white/10 transition-all duration-500 hover:ring-[12px] hover:ring-terracotta/10 hover:border-terracotta/30"
+        style={{ perspective: `${perspective}px` }}
+      >
+        <motion.div
+          className="absolute inset-0 z-10"
+          style={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  opacity: renderOpacity,
+                  scale: renderScale,
+                  rotateX: 0,
+                }
+          }
+          initial={shouldReduceMotion ? { opacity: 0 } : false}
+          animate={shouldReduceMotion ? { opacity: isVisible ? 1 : 0 } : undefined}
+          transition={shouldReduceMotion ? { duration: 0.3, ease: 'easeInOut' } : undefined}
+        >
+          <img src={renderImage} className="absolute inset-0 h-full w-full object-cover" alt={renderAlt} />
+        </motion.div>
+
+        {!shouldReduceMotion && (
+          <motion.div
+            className="absolute inset-0 z-20"
+            style={{
+              rotateX: planRotateX,
+              scale: planScale,
+              opacity: planOpacity,
+              transformOrigin: 'center bottom',
+              transformStyle: 'preserve-3d',
+            }}
+          >
+            <img src={planImage} className="absolute inset-0 h-full w-full object-cover" alt={planAlt} />
+          </motion.div>
+        )}
+
+        <motion.div
+          className="absolute right-6 bottom-6 z-30 pointer-events-none"
+          style={{ opacity: shouldReduceMotion ? 1 : thumbnailOpacity }}
+        >
+          <div className="h-20 w-28 md:h-24 md:w-36 overflow-hidden rounded-2xl border border-white/35 bg-white/35 backdrop-blur-sm shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+            <img src={thumbnailImage || planImage} className="h-full w-full object-contain opacity-85" alt="" />
+          </div>
+        </motion.div>
+
+        <div className="absolute bottom-6 left-6 z-30 pointer-events-none">
+          <div className="bg-white/10 backdrop-blur-2xl px-5 py-2.5 rounded-2xl border border-white/10 text-[11px] font-bold text-white flex items-center gap-2.5">
+            <Sparkles size={14} className="text-artevrika" />
+            {caption}
+          </div>
+        </div>
+      </div>
+
+      <div className="px-2">
+        <h4 className="text-[18px] md:text-[22px] font-heading font-bold dark:text-white text-[#1c3e42] uppercase tracking-tight mb-3 leading-none transition-colors group-hover:text-terracotta">
+          {title}
+        </h4>
+        <p className="text-[14px] md:text-[16px] font-sans font-medium text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-2xl">
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const LightScenariosCard: React.FC<CaseItemProps> = ({ slides = [], title, description, badge }) => {
+  const [activeSlide, setActiveSlide] = useState(0);
+  const safeSlides = slides.length > 0 ? slides : [];
+
+  useEffect(() => {
+    if (safeSlides.length <= 1) return;
+
+    const timer = window.setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % safeSlides.length);
+    }, 2800);
+
+    return () => window.clearInterval(timer);
+  }, [safeSlides.length]);
+
+  if (safeSlides.length === 0) return null;
+
+  return (
+    <div className="flex flex-col gap-6 group">
+      <div className="relative aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden bg-zinc-900 shadow-2xl border border-zinc-200 dark:border-white/10 transition-all duration-500 hover:ring-[12px] hover:ring-terracotta/10 hover:border-terracotta/30">
+        {safeSlides.map((slide, index) => (
+          <img
+            key={slide}
+            src={slide}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] ease-in-out ${
+              index === activeSlide ? 'opacity-100' : 'opacity-0'
+            }`}
+            alt={`Сценарий освещения ${index + 1}`}
+          />
+        ))}
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10 pointer-events-none" />
+
+        <div className="absolute top-6 right-6 z-20 pointer-events-none">
+          <div className="bg-black/55 backdrop-blur-xl px-4 py-1.5 rounded-full border border-white/15 text-[10px] font-black uppercase tracking-[0.2em] text-white/85 font-heading">
+            Сцена {activeSlide + 1} / {safeSlides.length}
+          </div>
+        </div>
+
+        <div className="absolute bottom-6 left-6 z-20 pointer-events-none">
+          <div className="bg-white/10 backdrop-blur-2xl px-5 py-2.5 rounded-2xl border border-white/10 text-[11px] font-bold text-white flex items-center gap-2.5">
+            <Sparkles size={14} className="text-artevrika" />
+            {badge}
+          </div>
+        </div>
+      </div>
+
+      <div className="px-2">
+        <h4 className="text-[18px] md:text-[22px] font-heading font-bold dark:text-white text-[#1c3e42] uppercase tracking-tight mb-3 leading-none transition-colors group-hover:text-terracotta">
+          {title}
+        </h4>
+        <p className="text-[14px] md:text-[16px] font-sans font-medium text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-2xl">
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+};
+
 const CASES = [
   {
     id: 1,
-    badge: "Virtual Staging",
-    title: "Виртуальная меблировка",
-    description: "Из «коробки» в готовый интерьер за 3 минуты. Идеально для показа потенциала пустых помещений.",
-    before: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1600&q=80",
-    after: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1600&q=80",
+    badge: "Build to Design",
+    title: "Дизайн поверх стройки",
+    description: "Показал клиенту финал прямо на фото объекта — фотореалистичная визуализация того же ракурса поверх черновой отделки.",
+    before: "/cases/01-build-to-design/1.jpeg",
+    after: "/cases/01-build-to-design/2.jpeg",
   },
   {
     id: 2,
-    badge: "2D to 3D Pipeline",
-    title: "Из плана в 3D",
-    description: "Трансформация технического чертежа в объемную визуализацию для быстрого согласования концепта.",
-    before: "https://images.unsplash.com/photo-1503387762-592dea58ef21?w=1600&q=80",
-    after: "https://images.unsplash.com/photo-1618221469555-7f3ad97540d6?w=1600&q=80",
+    badge: "Virtual Staging",
+    title: "Виртуальная меблировка",
+    description: "Из «коробки» в готовый интерьер за 3 минуты. Идеально для показа потенциала пустых помещений.",
+    before: "/cases/03-furtiture-virtual/before.jpeg",
+    after: "/cases/03-furtiture-virtual/after.jpeg",
   },
   {
     id: 3,
-    badge: "Light Scenarios",
-    title: "Смена освещения",
-    description: "4 сценария света за один запуск. Мгновенная проверка атмосферы: от утреннего солнца до вечернего уюта.",
-    before: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1600&q=80",
-    after: "https://images.unsplash.com/photo-1616137422495-1e9e46e2aa77?w=1600&q=80",
+    badge: "2D to 3D Pipeline",
+    title: "Из плана в 3D",
+    description: "Трансформация технического чертежа в объемную визуализацию для быстрого согласования концепта.",
+    before: "/cases/02-2d-to-3d/2d.jpeg",
+    after: "/cases/02-2d-to-3d/3d.jpeg",
+    thumbnailImage: "/cases/02-2d-to-3d/tmbl.jpg",
   },
   {
     id: 4,
+    badge: "Light Scenarios",
+    title: "Смена освещения",
+    description: "4 сценария света за один запуск. Мгновенная проверка атмосферы: от утреннего солнца до вечернего уюта.",
+    before: "/cases/04-light/1.jpeg",
+    after: "/cases/04-light/2.jpg",
+    slides: [
+      "/cases/04-light/1.jpeg",
+      "/cases/04-light/2.jpg",
+      "/cases/04-light/3.jpeg",
+      "/cases/04-light/4.jpeg",
+      "/cases/04-light/5.jpeg",
+    ],
+  },
+  {
+    id: 5,
     badge: "Material Swap",
     title: "Замена материалов",
     description: "«Мрамор или дерево?» — решайте за 5 минут. Локальная замена текстур без перегенерации всего кадра.",
@@ -145,7 +371,22 @@ export const BeforeAfterCases: React.FC = () => {
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.7, ease: "easeOut" }}
             >
-              <BeforeAfterSlider {...item} />
+              {item.id === 3 ? (
+                <PlanTo3DCard
+                  planImage={item.before}
+                  renderImage={item.after}
+                  thumbnailImage={item.thumbnailImage}
+                  caption={item.badge}
+                  planAlt="2D-план помещения"
+                  renderAlt="3D-рендер интерьера"
+                  title={item.title}
+                  description={item.description}
+                />
+              ) : item.id === 4 ? (
+                <LightScenariosCard {...item} />
+              ) : (
+                <BeforeAfterSlider {...item} />
+              )}
             </motion.div>
           ))}
         </div>
