@@ -1,5 +1,6 @@
 
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+import { ChevronDown, ChevronUp, LayoutDashboard } from 'lucide-react';
 import ReactFlow, { 
   Background, 
   Node, 
@@ -108,16 +109,19 @@ const MODULES_DATA = [
 ];
 
 const CourseProgramInner: React.FC = () => {
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [viewportWidth, setViewportWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
   const { fitView } = useReactFlow();
 
-  const isMobile = windowWidth < 1024;
-  const cols = isMobile ? 1 : 3;
-  const stepX = isMobile ? 0 : 500;
-  const stepY = 540; 
+  const cols = viewportWidth < 900 ? 1 : viewportWidth < 1440 ? 2 : 3;
+  const isMobile = cols === 1;
+  const stepX = cols === 1
+    ? 0
+    : Math.max(460, Math.min(560, Math.floor((viewportWidth - 140) / (cols - 1))));
+  const stepY = isMobile ? 560 : 540; 
   
   const totalRows = Math.ceil((MODULES_DATA.length + 1) / cols);
-  const containerHeight = totalRows * stepY;
+  const containerHeight = totalRows * stepY + 120;
 
   const initialNodes: Node[] = useMemo(() => {
     const gridWidth = (cols - 1) * stepX;
@@ -174,24 +178,105 @@ const CourseProgramInner: React.FC = () => {
   }, []);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges] = useEdgesState(initialEdges);
+  const [edges] = useEdgesState(initialEdges);
+
+  const restoreDefaultViewport = useCallback((duration = 800) => {
+    fitView({
+      padding: 0.05,
+      duration,
+      minZoom: 0.35,
+      maxZoom: 1.5,
+    });
+  }, [fitView]);
+
+  const handleResetLayout = useCallback(() => {
+    // Rebuild node layout for current viewport width.
+    setNodes(initialNodes);
+    // After ReactFlow applies positions, restore camera position + zoom.
+    requestAnimationFrame(() => requestAnimationFrame(() => restoreDefaultViewport(700)));
+  }, [initialNodes, restoreDefaultViewport, setNodes]);
+
+  const handleFocusTop = useCallback(() => {
+    const section = containerRef.current?.closest('section');
+    if (section) {
+      const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+      const navOffset = 110;
+      window.scrollTo({ top: Math.max(0, sectionTop - navOffset), behavior: 'smooth' });
+    }
+
+    // 1) First move viewport to the first row.
+    setNodes(initialNodes);
+    const topRowIds = MODULES_DATA.slice(0, cols).map((item) => item.id);
+    const topNodes = initialNodes.filter((node) => topRowIds.includes(node.id));
+
+    requestAnimationFrame(() => {
+      if (topNodes.length === 0) {
+        restoreDefaultViewport(500);
+        return;
+      }
+
+      fitView({
+        nodes: topNodes,
+        padding: 0.2,
+        duration: 500,
+        minZoom: 0.4,
+        maxZoom: 1.5,
+      });
+    });
+
+    // 2) Then align everything exactly like middle button.
+    window.setTimeout(() => {
+      setNodes(initialNodes);
+      requestAnimationFrame(() => requestAnimationFrame(() => restoreDefaultViewport(650)));
+    }, 560);
+  }, [cols, fitView, initialNodes, restoreDefaultViewport, setNodes]);
+
+  const handleFocusBottom = useCallback(() => {
+    const canvasRect = containerRef.current?.getBoundingClientRect();
+    if (canvasRect) {
+      const canvasBottom = canvasRect.bottom + window.scrollY;
+      const targetScrollTop = Math.max(0, canvasBottom - window.innerHeight);
+      window.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
+    }
+
+    // After page scroll: align all nodes exactly like middle button.
+    window.setTimeout(() => {
+      setNodes(initialNodes);
+      requestAnimationFrame(() => requestAnimationFrame(() => restoreDefaultViewport(650)));
+    }, 500);
+  }, [initialNodes, restoreDefaultViewport, setNodes]);
 
   useEffect(() => {
     setNodes(initialNodes);
     const timer = setTimeout(() => {
-        fitView({ padding: 0.05, duration: 800, minZoom: 0.35 });
+        restoreDefaultViewport(800);
     }, 150);
     return () => clearTimeout(timer);
-  }, [initialNodes, fitView, setNodes, isMobile]);
+  }, [initialNodes, restoreDefaultViewport, setNodes, viewportWidth]);
 
   useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    const node = containerRef.current;
+    if (!node) return;
+
+    const updateSize = () => {
+      const nextWidth = Math.round(node.getBoundingClientRect().width);
+      if (nextWidth > 0) setViewportWidth(nextWidth);
+    };
+
+    updateSize();
+
+    const observer = new ResizeObserver(() => updateSize());
+    observer.observe(node);
+
+    window.addEventListener('resize', updateSize);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateSize);
+    };
   }, []);
 
   return (
-    <div style={{ height: `${containerHeight}px` }} className="w-full relative transition-all duration-500 -mt-16">
+    <div ref={containerRef} style={{ height: `${containerHeight}px` }} className="w-full relative transition-all duration-500">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -213,14 +298,42 @@ const CourseProgramInner: React.FC = () => {
           color={document.documentElement.classList.contains('dark') ? "#1f1f23" : "#d1d5db"} 
         />
       </ReactFlow>
+      <div className="absolute inset-y-0 right-4 md:right-6 z-40 pointer-events-none">
+        <div className="sticky top-1/2 -translate-y-1/2 w-12 rounded-2xl overflow-hidden bg-white/18 dark:bg-white/8 backdrop-blur-2xl backdrop-saturate-200 border border-white/30 dark:border-white/20 divide-y divide-white/25 dark:divide-white/10 shadow-[0_18px_45px_rgba(0,0,0,0.28)] pointer-events-auto">
+          <button
+            onClick={handleFocusTop}
+            aria-label="К началу программы"
+            title="К началу программы"
+            className="group w-12 h-12 flex items-center justify-center bg-white/8 dark:bg-white/[0.03] hover:bg-white/20 dark:hover:bg-white/[0.08] text-zinc-700 dark:text-zinc-300 hover:text-[#f25151] transition-colors"
+          >
+            <ChevronUp size={20} className="transition-colors group-hover:text-[#f25151]" />
+          </button>
+          <button
+            onClick={handleResetLayout}
+            aria-label="Расставить ноды"
+            title="Расставить ноды"
+            className="group w-12 h-12 flex items-center justify-center bg-white/8 dark:bg-white/[0.03] hover:bg-white/20 dark:hover:bg-white/[0.08] text-zinc-700 dark:text-zinc-300 hover:text-[#f25151] transition-colors"
+          >
+            <LayoutDashboard size={20} className="transition-colors group-hover:text-[#f25151]" />
+          </button>
+          <button
+            onClick={handleFocusBottom}
+            aria-label="К последней ноде"
+            title="К последней ноде"
+            className="group w-12 h-12 flex items-center justify-center bg-white/8 dark:bg-white/[0.03] hover:bg-white/20 dark:hover:bg-white/[0.08] text-zinc-700 dark:text-zinc-300 hover:text-[#f25151] transition-colors"
+          >
+            <ChevronDown size={20} className="transition-colors group-hover:text-[#f25151]" />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
 
 export const CourseProgram: React.FC = () => {
   return (
-    <section id="programma" className="pt-8 pb-20 md:pt-12 md:pb-28 bg-white dark:bg-[#08080a] transition-colors duration-500 overflow-visible">
-      <div className="container-fluid mb-4 text-center flex flex-col items-center">
+    <section id="programma" className="pt-8 pb-8 md:pt-12 md:pb-10 bg-white dark:bg-[#08080a] transition-colors duration-500 overflow-visible">
+      <div className="container-fluid mb-4 text-center flex flex-col items-center relative z-20">
         <span className="font-heading text-[11px] uppercase tracking-[0.6em] text-artevrika font-black mb-8 block">
           Учебный план
         </span>
@@ -228,12 +341,12 @@ export const CourseProgram: React.FC = () => {
           Программа <br />
           <span className="inline-flex whitespace-nowrap px-[0.12em] -mx-[0.12em] pb-[0.06em] bg-gradient-to-r from-artevrika via-[#ffbb00] via-terracotta via-[#ffbb00] to-artevrika bg-[length:300%_auto] animate-shimmer bg-clip-text text-transparent italic leading-[1.05] drop-shadow-[0_0_15px_rgba(242,81,81,0.2)] underline decoration-terracotta/40 underline-offset-[0.14em] [text-decoration-thickness:0.06em]">мастерства</span>
         </h2>
-        <p className="text-[clamp(16px,1.2vw,18px)] font-sans font-medium text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-2xl">
+        <p className="text-[clamp(16px,1.2vw,18px)] font-sans font-medium text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-2xl mx-auto">
           От настройки рабочего пространства до выпуска собственного AI-приложения для дизайна. 41 урок в 12 модулях.
         </p>
       </div>
 
-      <div className="w-full relative">
+      <div className="w-full relative z-10 mt-6 md:mt-8">
         <ReactFlowProvider>
           <CourseProgramInner />
         </ReactFlowProvider>

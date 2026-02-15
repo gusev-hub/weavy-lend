@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Check, X, Star } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { COLORS } from '../constants';
 
 const TIERS = [
@@ -50,8 +51,22 @@ const TIERS = [
 
 export const Pricing: React.FC = () => {
   return (
-    <section id="pricing" className="py-24 bg-white dark:bg-[#0c0c0e] overflow-visible">
-      <div className="container-fluid">
+    <section id="pricing" className="relative py-24 bg-[#163338] dark:bg-magic-mesh transition-colors overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <motion.div
+          animate={{ x: [0, 120, -40, 0], y: [0, -90, 40, 0], rotate: 360 }}
+          transition={{ duration: 26, repeat: Infinity, ease: 'linear' }}
+          className="absolute top-[-20%] left-[-10%] w-[80%] h-[80%] bg-terracotta/10 blur-[220px] rounded-full"
+        />
+        <motion.div
+          animate={{ x: [0, -140, 60, 0], y: [0, 80, -80, 0], rotate: -360 }}
+          transition={{ duration: 34, repeat: Infinity, ease: 'linear' }}
+          className="absolute bottom-[-20%] right-[-10%] w-[80%] h-[80%] bg-artevrika/12 blur-[240px] rounded-full"
+        />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(56,211,159,0.05)_0%,transparent_70%)] animate-pulse" />
+      </div>
+
+      <div className="container-fluid relative z-10">
         <h2 className="text-[32px] md:text-[52px] font-heading font-bold mb-20 text-center tracking-tighter leading-none uppercase">Формат <span className="inline-flex whitespace-nowrap px-[0.12em] -mx-[0.12em] pb-[0.06em] bg-gradient-to-r from-artevrika via-[#ffbb00] via-terracotta via-[#ffbb00] to-artevrika bg-[length:300%_auto] animate-shimmer bg-clip-text text-transparent italic leading-[1.05] drop-shadow-[0_0_15px_rgba(242,81,81,0.2)] underline decoration-terracotta/40 underline-offset-[0.14em] [text-decoration-thickness:0.06em]">участия</span></h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">

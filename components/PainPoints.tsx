@@ -45,20 +45,20 @@ export const PainPoints: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="relative px-8 pb-8 pt-14 md:px-10 md:pb-10 md:pt-16 rounded-[2.5rem] bg-zinc-50 dark:bg-[#121214] border border-zinc-200 dark:border-white/5 hover:ring-[6px] hover:ring-terracotta/10 transition-all duration-300 group shadow-xl flex flex-col items-start h-full overflow-visible"
+              className="relative px-8 pb-8 pt-14 md:px-10 md:pb-10 md:pt-16 rounded-[2.5rem] bg-[#1b4b4a] dark:bg-[#121214] border border-artevrika/35 dark:border-white/5 hover:ring-[6px] hover:ring-artevrika/25 transition-all duration-300 group shadow-xl flex flex-col items-start h-full overflow-visible"
             >
               {/* Floating Icon */}
-              <div className="absolute -top-7 left-8 w-14 h-14 rounded-2xl flex items-center justify-center bg-white dark:bg-zinc-800 text-terracotta shadow-lg transition-all duration-500 group-hover:rotate-6 group-hover:scale-110 border border-zinc-100 dark:border-white/5">
+              <div className="absolute -top-7 left-8 w-14 h-14 rounded-2xl flex items-center justify-center bg-white/10 dark:bg-zinc-800 text-white shadow-lg transition-all duration-500 group-hover:rotate-6 group-hover:scale-110 border border-white/20 dark:border-white/5">
                 {React.cloneElement(point.icon as React.ReactElement<any>, { size: 22, strokeWidth: 2.5 })}
               </div>
 
-              <h3 className="text-[14px] sm:text-[15px] md:text-[17px] font-heading font-bold mb-3 tracking-tight dark:text-white text-zinc-900 leading-tight uppercase">{point.title}</h3>
-              <p className="text-[13px] md:text-[14px] font-sans font-medium text-zinc-500 dark:text-zinc-400 leading-relaxed">
+              <h3 className="text-[14px] sm:text-[15px] md:text-[17px] font-heading font-bold mb-3 tracking-tight text-white leading-tight uppercase">{point.title}</h3>
+              <p className="text-[13px] md:text-[14px] font-sans font-medium text-white/90 leading-relaxed">
                 {point.text}
               </p>
               
               {/* Subtle background glow on hover */}
-              <div className="absolute inset-0 rounded-[2.5rem] bg-terracotta/[0.02] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+              <div className="absolute inset-0 rounded-[2.5rem] bg-artevrika/[0.08] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             </motion.div>
           ))}
         </div>

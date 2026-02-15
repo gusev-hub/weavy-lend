@@ -10,7 +10,6 @@ import {
   BookOpen, 
   Clapperboard 
 } from 'lucide-react';
-import { COLORS } from '../constants';
 
 const ARTIFACTS = [
   { icon: <ClipboardCheck />, title: 'Чек-лист MJ' },
@@ -35,14 +34,14 @@ export const Artifacts: React.FC = () => {
           {ARTIFACTS.map((a, i) => (
             <div 
               key={i} 
-              className="p-8 rounded-[2rem] bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/5 flex flex-col items-center text-center group hover:bg-white dark:hover:bg-zinc-800 hover:border-artevrika transition-all duration-300 hover:ring-[8px] hover:ring-artevrika/10 shadow-md"
+              className="p-8 rounded-[2rem] bg-darkgreen border border-artevrika/30 dark:bg-zinc-900/50 dark:border-white/5 flex flex-col items-center text-center group hover:bg-[#17353a] dark:hover:bg-zinc-800 hover:border-artevrika transition-all duration-300 hover:ring-[8px] hover:ring-artevrika/20 shadow-md"
             >
               <div 
-                className="w-16 h-16 rounded-[1.5rem] flex items-center justify-center mb-6 transition-transform group-hover:rotate-6 bg-zinc-100 dark:bg-zinc-950 text-terracotta shadow-inner"
+                className="w-16 h-16 rounded-[1.5rem] flex items-center justify-center mb-6 transition-transform group-hover:rotate-6 bg-white/10 dark:bg-zinc-950 text-white shadow-inner"
               >
                 {React.cloneElement(a.icon as React.ReactElement<any>, { size: 28, strokeWidth: 2 })}
               </div>
-              <p className="font-black text-base dark:text-zinc-100 text-zinc-900 tracking-tight leading-tight uppercase font-heading">{a.title}</p>
+              <p className="font-black text-base text-white dark:text-zinc-100 tracking-tight leading-tight uppercase font-heading">{a.title}</p>
             </div>
           ))}
         </div>
