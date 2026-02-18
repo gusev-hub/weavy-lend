@@ -430,13 +430,21 @@ const HeroInner: React.FC = () => {
             onClick={handleViewportToggle}
             aria-label={shouldResetViewport ? 'Вернуть вид по умолчанию' : 'Сфокусироваться на первой ноде'}
             title={shouldResetViewport ? 'Вернуть вид по умолчанию' : 'Сфокусироваться на первой ноде'}
-            className="group relative grid h-12 w-12 place-items-center bg-white/8 dark:bg-white/[0.03] text-zinc-700 transition-colors hover:bg-white/20 hover:text-[#f25151] dark:text-zinc-300 dark:hover:bg-white/[0.08]"
+            className="group relative h-12 w-12 bg-white/8 text-zinc-700 transition-colors hover:bg-white/20 hover:text-[#f25151] dark:bg-white/[0.03] dark:text-zinc-300 dark:hover:bg-white/[0.08]"
           >
-            <span className="pointer-events-none inline-flex h-7 w-7 items-center justify-center">
+            <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
               {shouldResetViewport ? (
-                <LayoutDashboard size={24} strokeWidth={2.2} className="block transition-transform duration-200 group-hover:scale-110" />
+                <LayoutDashboard
+                  size={24}
+                  strokeWidth={2.2}
+                  className="block -translate-y-px transition-transform duration-200 group-hover:scale-110"
+                />
               ) : (
-                <Fullscreen size={24} strokeWidth={2.2} className="block transition-transform duration-200 group-hover:scale-110" />
+                <Fullscreen
+                  size={24}
+                  strokeWidth={2.2}
+                  className="block -translate-y-px transition-transform duration-200 group-hover:scale-110"
+                />
               )}
             </span>
           </button>
