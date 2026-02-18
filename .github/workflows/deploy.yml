@@ -28,44 +28,42 @@ jobs:
 
       - name: Create .htaccess
         run: |
-          cat > dist/.htaccess << 'EOF'
-          RewriteEngine On
-          RewriteBase /
+          echo 'RewriteEngine On' > dist/.htaccess
+          echo 'RewriteBase /' >> dist/.htaccess
+          echo '' >> dist/.htaccess
+          echo '# SPA fallback' >> dist/.htaccess
+          echo 'RewriteCond %{REQUEST_FILENAME} !-f' >> dist/.htaccess
+          echo 'RewriteCond %{REQUEST_FILENAME} !-d' >> dist/.htaccess
+          echo 'RewriteRule ^ index.html [L]' >> dist/.htaccess
+          echo '' >> dist/.htaccess
+          echo '# Gzip compression' >> dist/.htaccess
+          echo '<IfModule mod_deflate.c>' >> dist/.htaccess
+          echo '  AddOutputFilterByType DEFLATE text/html text/plain text/xml' >> dist/.htaccess
+          echo '  AddOutputFilterByType DEFLATE text/css application/javascript' >> dist/.htaccess
+          echo '  AddOutputFilterByType DEFLATE application/json application/ld+json' >> dist/.htaccess
+          echo '  AddOutputFilterByType DEFLATE image/svg+xml' >> dist/.htaccess
+          echo '</IfModule>' >> dist/.htaccess
+          echo '' >> dist/.htaccess
+          echo '# Caching' >> dist/.htaccess
+          echo '<IfModule mod_expires.c>' >> dist/.htaccess
+          echo '  ExpiresActive On' >> dist/.htaccess
+          echo '  ExpiresByType image/webp "access plus 1 year"' >> dist/.htaccess
+          echo '  ExpiresByType image/jpeg "access plus 1 month"' >> dist/.htaccess
+          echo '  ExpiresByType image/png "access plus 1 month"' >> dist/.htaccess
+          echo '  ExpiresByType image/svg+xml "access plus 1 month"' >> dist/.htaccess
+          echo '  ExpiresByType application/javascript "access plus 1 month"' >> dist/.htaccess
+          echo '  ExpiresByType text/css "access plus 1 month"' >> dist/.htaccess
+          echo '  ExpiresByType text/html "access plus 0 seconds"' >> dist/.htaccess
+          echo '</IfModule>' >> dist/.htaccess
+          echo '' >> dist/.htaccess
+          echo '# Security headers' >> dist/.htaccess
+          echo '<IfModule mod_headers.c>' >> dist/.htaccess
+          echo '  Header set X-Content-Type-Options "nosniff"' >> dist/.htaccess
+          echo '  Header set X-Frame-Options "SAMEORIGIN"' >> dist/.htaccess
+          echo '  Header set X-XSS-Protection "1; mode=block"' >> dist/.htaccess
+          echo '</IfModule>' >> dist/.htaccess
 
-          # SPA fallback
-          RewriteCond %{REQUEST_FILENAME} !-f
-          RewriteCond %{REQUEST_FILENAME} !-d
-          RewriteRule ^ index.html [L]
-
-          # Gzip compression
-          <IfModule mod_deflate.c>
-            AddOutputFilterByType DEFLATE text/html text/plain text/xml
-            AddOutputFilterByType DEFLATE text/css application/javascript
-            AddOutputFilterByType DEFLATE application/json application/ld+json
-            AddOutputFilterByType DEFLATE image/svg+xml
-          </IfModule>
-
-          # Caching
-          <IfModule mod_expires.c>
-            ExpiresActive On
-            ExpiresByType image/webp "access plus 1 year"
-            ExpiresByType image/jpeg "access plus 1 month"
-            ExpiresByType image/png "access plus 1 month"
-            ExpiresByType image/svg+xml "access plus 1 month"
-            ExpiresByType application/javascript "access plus 1 month"
-            ExpiresByType text/css "access plus 1 month"
-            ExpiresByType text/html "access plus 0 seconds"
-          </IfModule>
-
-          # Security headers
-          <IfModule mod_headers.c>
-            Header set X-Content-Type-Options "nosniff"
-            Header set X-Frame-Options "SAMEORIGIN"
-            Header set X-XSS-Protection "1; mode=block"
-          </IfModule>
-          EOF
-
-- name: Setup SSH
+      - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.BEGET_SSH_KEY }}" > ~/.ssh/id_ed25519
@@ -85,5 +83,5 @@ jobs:
 
       - name: Deployment status
         run: |
-          echo "✅ Deployment completed!"
-          echo "🌐 https://ai-design.school.artevrika.ru"
+          echo "Deployment completed!"
+          echo "https://ai-design.school.artevrika.ru"
