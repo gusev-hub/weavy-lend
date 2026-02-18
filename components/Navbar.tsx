@@ -30,7 +30,7 @@ export const Navbar: React.FC<NavbarProps> = ({ scrollY, viewportWidth, theme, s
   const shapeProgress = clamp(scrollY / 90, 0, 1);
   const contentProgress = clamp((scrollY - 110) / 140, 0, 1);
   const compactVisualMode = shapeProgress > 0.58;
-  const fluidPadding = Math.max(16, viewportWidth * 0.05);
+  const fluidPadding = isDesktop ? Math.max(16, viewportWidth * 0.05) : Math.max(10, viewportWidth * 0.028);
   const mobileCompactInset = 12.5;
 
   useEffect(() => {
@@ -55,13 +55,20 @@ export const Navbar: React.FC<NavbarProps> = ({ scrollY, viewportWidth, theme, s
     paddingRight: `${lerp(fluidPadding, 8, contentProgress)}px`,
   };
 
-  const rightControlsStyles: React.CSSProperties = {
-    gap: `${lerp(24, 8, contentProgress)}px`,
-  };
+  const isWideMobile = viewportWidth >= 390;
+  const isNarrowMobile = viewportWidth < 430;
 
+  const rightControlsStyles: React.CSSProperties = {
+    gap: `${lerp(24, isNarrowMobile ? 6 : 8, contentProgress)}px`,
+  };
   const ctaStyles: React.CSSProperties = {
-    height: `${lerp(56, 49, contentProgress)}px`,
-    paddingInline: `${lerp(40, 40, contentProgress)}px`,
+    height: `${lerp(isDesktop ? 56 : 46, isDesktop ? 49 : 40, contentProgress)}px`,
+    paddingInline: `${lerp(
+      isDesktop ? 40 : isWideMobile ? 18 : 14,
+      isDesktop ? 40 : isWideMobile ? 14 : 10,
+      contentProgress
+    )}px`,
+    maxWidth: isDesktop ? 'none' : '46vw',
   };
 
   return (
@@ -88,7 +95,7 @@ export const Navbar: React.FC<NavbarProps> = ({ scrollY, viewportWidth, theme, s
               <img 
                 src="https://static.tildacdn.pro/tild6364-6662-4663-a639-363061656262/school_artevrika_new.svg" 
                 alt="Школа Артэврика — логотип" 
-                className={`h-6 md:h-7 w-auto transition-all duration-500 ${compactVisualMode ? 'filter-none' : 'logo-themed'}`}
+                className={`h-5 sm:h-6 md:h-7 max-w-[140px] sm:max-w-none w-auto transition-all duration-500 ${compactVisualMode ? 'filter-none' : 'logo-themed'}`}
                 loading="eager"
               />
             </a>
@@ -138,7 +145,7 @@ export const Navbar: React.FC<NavbarProps> = ({ scrollY, viewportWidth, theme, s
             <a 
               href="#pricing"
               style={ctaStyles}
-              className="rounded-full text-[11px] font-black uppercase tracking-widest text-white transition-colors shadow-2xl bg-terracotta hover:bg-[#ff5d5d] active:bg-[#df4747] font-heading inline-flex items-center justify-center whitespace-nowrap"
+              className="rounded-full text-[8px] sm:text-[10px] lg:text-[11px] font-black uppercase tracking-[0.08em] sm:tracking-[0.14em] lg:tracking-widest text-white transition-colors shadow-2xl bg-terracotta hover:bg-[#ff5d5d] active:bg-[#df4747] font-heading inline-flex items-center justify-center whitespace-nowrap"
             >
               Записаться
             </a>

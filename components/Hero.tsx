@@ -70,11 +70,11 @@ const TitleNode = ({ data }: any) => (
       Практический курс по <a href="http://weavy.ai" target="_blank" rel="noopener noreferrer" className="text-zinc-900 dark:text-white font-bold underline decoration-artevrika/30 hover:text-artevrika transition-colors">weavy.ai</a>: научитесь делать полный комплект визуализаций за 2–3 дня вместо 3–4 недель. Узловые пайплайны, управляемые правки, дизайн-приложение для студии.
     </p>
 
-    <div className="flex flex-wrap items-center gap-6">
-      <a href="#pricing" className="px-14 py-8 rounded-full text-[15px] font-black uppercase tracking-[0.2em] text-white bg-terracotta flex items-center justify-center gap-4 font-heading shadow-[0_20px_45px_rgba(242,81,81,0.3)] hover:scale-105 transition-all whitespace-nowrap">
+    <div className="flex w-full flex-col sm:w-auto sm:flex-row flex-wrap items-stretch sm:items-center gap-4 sm:gap-6">
+      <a href="#pricing" className="w-full sm:w-auto px-8 sm:px-14 py-5 sm:py-8 rounded-full text-[12px] sm:text-[15px] font-black uppercase tracking-[0.14em] sm:tracking-[0.2em] text-white bg-terracotta flex items-center justify-center gap-3 sm:gap-4 font-heading shadow-[0_20px_45px_rgba(242,81,81,0.3)] sm:hover:scale-105 transition-all whitespace-nowrap">
         Начать обучение <ArrowRight size={24} />
       </a>
-      <a href="#programma" className="px-14 py-8 rounded-full text-[15px] font-black uppercase tracking-[0.2em] text-zinc-900 dark:text-white bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 flex items-center justify-center gap-4 font-heading hover:bg-zinc-200 dark:hover:bg-white/10 transition-all whitespace-nowrap">
+      <a href="#programma" className="w-full sm:w-auto px-8 sm:px-14 py-5 sm:py-8 rounded-full text-[12px] sm:text-[15px] font-black uppercase tracking-[0.14em] sm:tracking-[0.2em] text-zinc-900 dark:text-white bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 flex items-center justify-center gap-3 sm:gap-4 font-heading hover:bg-zinc-200 dark:hover:bg-white/10 transition-all whitespace-nowrap">
         Программа
       </a>
     </div>
