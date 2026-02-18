@@ -30,7 +30,8 @@ export const Author: React.FC = () => {
                   if (image.src !== AUTHOR_PHOTO_FALLBACK) image.src = AUTHOR_PHOTO_FALLBACK;
                 }}
                 className="w-full h-full object-cover"
-                alt="Алексей Гусев"
+                alt="Алексей Гусев — автор курса AI-дизайн интерьера, архитектор"
+                loading="lazy"
               />
             </div>
             <div 

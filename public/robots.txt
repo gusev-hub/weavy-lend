@@ -1,0 +1,21 @@
+# Robots.txt для weavy.artevrika.ru
+# https://weavy.artevrika.ru/
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://weavy.artevrika.ru/sitemap.xml
+
+# Crawl-delay для яндекса
+User-agent: Yandex
+Crawl-delay: 1
+
+# Разрешить индексацию всех страниц
+User-agent: Googlebot
+Allow: /
+
+# Запретить индексацию служебных файлов
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /dist/

@@ -16,7 +16,7 @@ const AssetNode = ({ data }: any) => (
   <div className="p-3 rounded-2xl bg-white dark:bg-[#1a1a1e] border border-zinc-200 dark:border-white/5 shadow-xl w-[180px]">
     <div className="text-[8px] font-bold text-zinc-400 uppercase tracking-[0.2em] mb-2">{data.label}</div>
     <div className="rounded-lg overflow-hidden aspect-video border border-zinc-100 dark:border-white/5">
-      <img src={data.image} className="w-full h-full object-cover grayscale opacity-60" alt="asset" />
+      <img src={data.image} className="w-full h-full object-cover grayscale opacity-60" alt="Исходное изображение интерьера" loading="lazy" />
     </div>
     <Handle type="source" position={Position.Right} className="!bg-artevrika" />
   </div>
@@ -69,12 +69,12 @@ const CompareNode = ({ data }: any) => {
           onMouseMove={handleMove}
           onTouchMove={handleMove}
         >
-          <img src={data.after} className="absolute inset-0 w-full h-full object-cover" alt="After" />
+          <img src={data.after} className="absolute inset-0 w-full h-full object-cover" alt="Результат AI-обработки" loading="lazy" />
           <div 
             className="absolute inset-0 w-full h-full overflow-hidden"
             style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
           >
-            <img src={data.before} className="absolute inset-0 w-full h-full object-cover grayscale" alt="Before" />
+            <img src={data.before} className="absolute inset-0 w-full h-full object-cover grayscale" alt="Исходное изображение" loading="lazy" />
           </div>
           
           {/* Slider Line */}

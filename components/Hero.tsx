@@ -103,10 +103,10 @@ const ReferenceNode = ({ data }: any) => (
     </div>
     <div className="grid grid-cols-2 gap-3">
       <div className={`aspect-square rounded-xl bg-zinc-50 dark:bg-black/40 overflow-hidden ${BORDER_STYLE} p-1`}>
-        <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&q=80" className="w-full h-full object-cover rounded-lg" alt="ref" />
+        <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&q=80" className="w-full h-full object-cover rounded-lg" alt="Референс интерьера — гостиная" loading="lazy" />
       </div>
       <div className={`aspect-square rounded-xl bg-zinc-50 dark:bg-black/40 overflow-hidden ${BORDER_STYLE} p-1`}>
-        <img src="https://images.unsplash.com/photo-1567016432779-094069958ea5?w=200&q=80" className="w-full h-full object-cover rounded-lg" alt="ref" />
+        <img src="https://images.unsplash.com/photo-1567016432779-094069958ea5?w=200&q=80" className="w-full h-full object-cover rounded-lg" alt="Референс интерьера — спальня" loading="lazy" />
       </div>
     </div>
     <Handle type="source" position={data.isMobile ? Position.Bottom : Position.Right} className="!bg-zinc-600 !w-4 !h-4 !border-none" style={data.isMobile ? {} : { top: '80%' }} />
@@ -238,6 +238,7 @@ const ResultNode = ({ data }: any) => {
 
 const VideoNode = ({ data }: any) => {
   const [modelIdx, setModelIdx] = useState(0);
+  const HERO_VIDEO_SRC = '/video/hero-video.mp4';
   const models = useMemo(() => [
     'VEO 3.1', 'Kling 3', 'Sora 2', 'Runway Gen-4.5', 'Grok Imagine Video', 'Wan 2.5', 'Hunyuan'
   ], []);
@@ -270,9 +271,16 @@ const VideoNode = ({ data }: any) => {
       </div>
       
       <div className="relative aspect-[16/9] rounded-[2rem] overflow-hidden bg-black border border-white/10 shadow-inner group">
-        <div className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_center,rgba(242,81,81,0.1)_0%,transparent_70%)]">
-           <Play size={40} className="text-white/20 group-hover:text-terracotta transition-all" />
-        </div>
+        <video
+          src={HERO_VIDEO_SRC}
+          className="absolute inset-0 w-full h-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(242,81,81,0.08)_0%,transparent_70%)] pointer-events-none" />
         <div className="absolute bottom-4 left-6 right-6 flex justify-between items-center gap-4">
           <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
             <motion.div className="h-full bg-terracotta" animate={{ width: ['0%', '100%'] }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }} />
@@ -286,6 +294,7 @@ const VideoNode = ({ data }: any) => {
 };
 
 const nodeTypes = { title: TitleNode, prompt: PromptNode, reference: ReferenceNode, aimodel: AIModelNode, result: ResultNode, video: VideoNode };
+const ALIGN_EPSILON = 2;
 
 const HeroInner: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -340,6 +349,22 @@ const HeroInner: React.FC = () => {
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges] = useEdgesState([]);
+  const isLayoutAligned = useMemo(() => {
+    if (nodes.length === 0) return true;
+    const idealNodes = getIdealNodes(windowWidth, loading, progress);
+    if (nodes.length !== idealNodes.length) return false;
+
+    const idealMap = new Map(idealNodes.map((node) => [node.id, node.position]));
+    return nodes.every((node) => {
+      const initialPos = idealMap.get(node.id);
+      if (!initialPos) return false;
+
+      return (
+        Math.abs(node.position.x - initialPos.x) <= ALIGN_EPSILON &&
+        Math.abs(node.position.y - initialPos.y) <= ALIGN_EPSILON
+      );
+    });
+  }, [getIdealNodes, loading, nodes, progress, windowWidth]);
 
   useEffect(() => {
     const ideal = getIdealNodes(windowWidth, loading, progress);
@@ -359,6 +384,14 @@ const HeroInner: React.FC = () => {
   }, [windowWidth, fitView, getIdealNodes]);
 
   const handleViewportToggle = useCallback(() => {
+    if (!isLayoutAligned) {
+      const alignedNodes = getIdealNodes(windowWidth, loading, progress);
+      setNodes(alignedNodes);
+      fitView({ padding: 0.15, duration: 600 });
+      setIsOfferFocused(false);
+      return;
+    }
+
     if (!isOfferFocused) {
       const offerNode = nodes.find((node) => node.id === '1');
       if (offerNode) {
@@ -376,7 +409,7 @@ const HeroInner: React.FC = () => {
 
     fitView({ padding: 0.2, duration: 600 });
     setIsOfferFocused(false);
-  }, [fitView, isOfferFocused, nodes]);
+  }, [fitView, getIdealNodes, isLayoutAligned, isOfferFocused, loading, nodes, progress, setNodes, windowWidth]);
 
   useEffect(() => {
     setNodes((nds) => nds.map((n) => n.id === '5' ? { ...n, data: { ...n.data, loading, progress } } : n));

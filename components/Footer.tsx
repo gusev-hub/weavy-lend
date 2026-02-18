@@ -65,8 +65,9 @@ export const Footer: React.FC = () => {
             <div className="flex items-center gap-3">
               <img 
                 src="https://static.tildacdn.pro/tild6364-6662-4663-a639-363061656262/school_artevrika_new.svg" 
-                alt="Школа Артэврика" 
-                className="h-6 w-auto invert brightness-[4] contrast-200"
+                alt="Школа Артэврика — логотип" 
+                className="h-6 w-auto brightness-0 invert opacity-90"
+                loading="lazy"
               />
             </div>
             <p className="text-white/70 text-sm leading-relaxed font-medium">

@@ -87,8 +87,9 @@ export const Navbar: React.FC<NavbarProps> = ({ scrollY, viewportWidth, theme, s
             <a href="#" className="flex items-center gap-3 group shrink-0">
               <img 
                 src="https://static.tildacdn.pro/tild6364-6662-4663-a639-363061656262/school_artevrika_new.svg" 
-                alt="Артэврика" 
+                alt="Школа Артэврика — логотип" 
                 className={`h-6 md:h-7 w-auto transition-all duration-500 ${compactVisualMode ? 'filter-none' : 'logo-themed'}`}
+                loading="eager"
               />
             </a>
           </div>

@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
-import { MoveHorizontal, Sparkles } from 'lucide-react';
+import { MoveHorizontal } from 'lucide-react';
 
 interface CaseItemProps {
   id: number;
@@ -46,14 +46,14 @@ const BeforeAfterSlider: React.FC<CaseItemProps> = ({ before, after, title, desc
         onTouchMove={handleMove}
       >
         {/* After Image */}
-        <img src={after} className="absolute inset-0 w-full h-full object-cover" alt="After" />
+        <img src={after} className="absolute inset-0 w-full h-full object-cover" alt={`Результат AI-дизайна: ${title}`} loading="lazy" />
         
         {/* Before Image (Clipped) */}
         <div 
           className="absolute inset-0 w-full h-full overflow-hidden"
           style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
         >
-          <img src={before} className="absolute inset-0 w-full h-full object-cover" alt="Before" />
+          <img src={before} className="absolute inset-0 w-full h-full object-cover" alt={`Исходное изображение: ${title}`} loading="lazy" />
           <div className="absolute inset-0 bg-black/20" /> 
         </div>
         
@@ -76,14 +76,6 @@ const BeforeAfterSlider: React.FC<CaseItemProps> = ({ before, after, title, desc
         <div className="absolute top-6 right-6 z-20 pointer-events-none">
           <div className="bg-terracotta/90 backdrop-blur-xl px-4 py-1.5 rounded-full border border-white/20 text-[9px] font-black uppercase tracking-[0.25em] text-white font-heading shadow-xl">
             После AI
-          </div>
-        </div>
-
-        {/* Info Badge */}
-        <div className="absolute bottom-6 left-6 z-20 pointer-events-none hidden md:block">
-          <div className="bg-white/10 backdrop-blur-2xl px-5 py-2.5 rounded-2xl border border-white/10 text-[11px] font-bold text-white flex items-center gap-2.5">
-             <Sparkles size={14} className="text-artevrika" />
-             {badge}
           </div>
         </div>
       </div>
@@ -191,7 +183,7 @@ const PlanTo3DCard: React.FC<PlanTo3DCardProps> = ({
           animate={shouldReduceMotion ? { opacity: isVisible ? 1 : 0 } : undefined}
           transition={shouldReduceMotion ? { duration: 0.3, ease: 'easeInOut' } : undefined}
         >
-          <img src={renderImage} className="absolute inset-0 h-full w-full object-cover" alt={renderAlt} />
+          <img src={renderImage} className="absolute inset-0 h-full w-full object-cover" alt={renderAlt} loading="lazy" />
         </motion.div>
 
         {!shouldReduceMotion && (
@@ -205,7 +197,7 @@ const PlanTo3DCard: React.FC<PlanTo3DCardProps> = ({
               transformStyle: 'preserve-3d',
             }}
           >
-            <img src={planImage} className="absolute inset-0 h-full w-full object-cover" alt={planAlt} />
+            <img src={planImage} className="absolute inset-0 h-full w-full object-cover" alt={planAlt} loading="lazy" />
           </motion.div>
         )}
 
@@ -214,16 +206,9 @@ const PlanTo3DCard: React.FC<PlanTo3DCardProps> = ({
           style={{ opacity: shouldReduceMotion ? 1 : thumbnailOpacity }}
         >
           <div className="h-20 w-28 md:h-24 md:w-36 overflow-hidden rounded-2xl border border-white/35 bg-white/35 backdrop-blur-sm shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
-            <img src={thumbnailImage || planImage} className="h-full w-full object-contain opacity-85" alt="" />
+            <img src={thumbnailImage || planImage} className="h-full w-full object-contain opacity-85" alt="Миниатюра плана" loading="lazy" />
           </div>
         </motion.div>
-
-        <div className="absolute bottom-6 left-6 z-30 pointer-events-none">
-          <div className="bg-white/10 backdrop-blur-2xl px-5 py-2.5 rounded-2xl border border-white/10 text-[11px] font-bold text-white flex items-center gap-2.5">
-            <Sparkles size={14} className="text-artevrika" />
-            {caption}
-          </div>
-        </div>
       </div>
 
       <div className="px-2">
@@ -240,17 +225,30 @@ const PlanTo3DCard: React.FC<PlanTo3DCardProps> = ({
 
 const LightScenariosCard: React.FC<CaseItemProps> = ({ slides = [], title, description, badge }) => {
   const [activeSlide, setActiveSlide] = useState(0);
+  const timerRef = useRef<number | null>(null);
   const safeSlides = slides.length > 0 ? slides : [];
+
+  const resetTimer = () => {
+    if (timerRef.current) {
+      window.clearInterval(timerRef.current);
+    }
+    timerRef.current = window.setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % safeSlides.length);
+    }, 2800);
+  };
 
   useEffect(() => {
     if (safeSlides.length <= 1) return;
-
-    const timer = window.setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % safeSlides.length);
-    }, 2800);
-
-    return () => window.clearInterval(timer);
+    resetTimer();
+    return () => {
+      if (timerRef.current) window.clearInterval(timerRef.current);
+    };
   }, [safeSlides.length]);
+
+  const handleSlideClick = (index: number) => {
+    setActiveSlide(index);
+    resetTimer();
+  };
 
   if (safeSlides.length === 0) return null;
 
@@ -264,11 +262,12 @@ const LightScenariosCard: React.FC<CaseItemProps> = ({ slides = [], title, descr
             className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] ease-in-out ${
               index === activeSlide ? 'opacity-100' : 'opacity-0'
             }`}
-            alt={`Сценарий освещения ${index + 1}`}
+            alt={`${title} — вариант ${index + 1}`}
+            loading="lazy"
           />
         ))}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10 pointer-events-none" />
 
         <div className="absolute top-6 right-6 z-20 pointer-events-none">
           <div className="bg-black/55 backdrop-blur-xl px-4 py-1.5 rounded-full border border-white/15 text-[10px] font-black uppercase tracking-[0.2em] text-white/85 font-heading">
@@ -276,11 +275,101 @@ const LightScenariosCard: React.FC<CaseItemProps> = ({ slides = [], title, descr
           </div>
         </div>
 
-        <div className="absolute bottom-6 left-6 z-20 pointer-events-none">
-          <div className="bg-white/10 backdrop-blur-2xl px-5 py-2.5 rounded-2xl border border-white/10 text-[11px] font-bold text-white flex items-center gap-2.5">
-            <Sparkles size={14} className="text-artevrika" />
-            {badge}
+        <div className="absolute bottom-6 right-6 z-20 flex items-center gap-2">
+          {safeSlides.map((slide, index) => (
+            <button
+              key={slide}
+              onClick={() => handleSlideClick(index)}
+              className={`relative h-9 w-14 md:h-11 md:w-16 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
+                index === activeSlide
+                  ? 'border-terracotta shadow-lg shadow-terracotta/40 scale-105'
+                  : 'border-white/25 opacity-60 hover:opacity-90 hover:border-white/50'
+              }`}
+            >
+              <img src={slide} className="h-full w-full object-cover" alt={`Миниатюра ${index + 1}`} loading="lazy" />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="px-2">
+        <h4 className="text-[18px] md:text-[22px] font-heading font-bold dark:text-white text-[#1c3e42] uppercase tracking-tight mb-3 leading-none transition-colors group-hover:text-terracotta">
+          {title}
+        </h4>
+        <p className="text-[14px] md:text-[16px] font-sans font-medium text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-2xl">
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const MaterialSwapCard: React.FC<CaseItemProps> = ({ slides = [], title, description, badge }) => {
+  const [activeSlide, setActiveSlide] = useState(0);
+  const timerRef = useRef<number | null>(null);
+  const safeSlides = slides.length > 0 ? slides : [];
+
+  const resetTimer = () => {
+    if (timerRef.current) {
+      window.clearInterval(timerRef.current);
+    }
+    timerRef.current = window.setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % safeSlides.length);
+    }, 3500);
+  };
+
+  useEffect(() => {
+    if (safeSlides.length <= 1) return;
+    resetTimer();
+    return () => {
+      if (timerRef.current) window.clearInterval(timerRef.current);
+    };
+  }, [safeSlides.length]);
+
+  const handleSlideClick = (index: number) => {
+    setActiveSlide(index);
+    resetTimer();
+  };
+
+  if (safeSlides.length === 0) return null;
+
+  return (
+    <div className="flex flex-col gap-6 group">
+      <div className="relative aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden bg-zinc-900 shadow-2xl border border-zinc-200 dark:border-white/10 transition-all duration-500 hover:ring-[12px] hover:ring-terracotta/10 hover:border-terracotta/30">
+        {safeSlides.map((slide, index) => (
+          <img
+            key={slide}
+            src={slide}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1000ms] ease-in-out ${
+              index === activeSlide ? 'opacity-100' : 'opacity-0'
+            }`}
+            alt={`${title} — вариант материала ${index + 1}`}
+            loading="lazy"
+          />
+        ))}
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+
+        <div className="absolute top-6 right-6 z-20 pointer-events-none">
+          <div className="bg-black/55 backdrop-blur-xl px-4 py-1.5 rounded-full border border-white/15 text-[10px] font-black uppercase tracking-[0.2em] text-white/85 font-heading">
+            Вариант {activeSlide + 1} / {safeSlides.length}
           </div>
+        </div>
+
+        <div className="absolute bottom-6 right-6 z-20 flex items-center gap-2">
+          {safeSlides.map((slide, index) => (
+            <button
+              key={slide}
+              onClick={() => handleSlideClick(index)}
+              className={`relative h-10 w-16 md:h-12 md:w-20 rounded-xl overflow-hidden border-2 transition-all duration-300 ${
+                index === activeSlide
+                  ? 'border-terracotta shadow-lg shadow-terracotta/40 scale-105'
+                  : 'border-white/25 opacity-60 hover:opacity-90 hover:border-white/50'
+              }`}
+            >
+              <img src={slide} className="h-full w-full object-cover" alt={`Миниатюра материала ${index + 1}`} loading="lazy" />
+            </button>
+          ))}
         </div>
       </div>
 
@@ -302,39 +391,39 @@ const CASES = [
     badge: "Build to Design",
     title: "Дизайн поверх стройки",
     description: "Показал клиенту финал прямо на фото объекта — фотореалистичная визуализация того же ракурса поверх черновой отделки.",
-    before: "/cases/01-build-to-design/1.jpeg",
-    after: "/cases/01-build-to-design/2.jpeg",
+    before: "/cases/01-build-to-design/1.webp",
+    after: "/cases/01-build-to-design/2.webp",
   },
   {
     id: 2,
     badge: "Virtual Staging",
     title: "Виртуальная меблировка",
     description: "Из «коробки» в готовый интерьер за 3 минуты. Идеально для показа потенциала пустых помещений.",
-    before: "/cases/03-furtiture-virtual/before.jpeg",
-    after: "/cases/03-furtiture-virtual/after.jpeg",
+    before: "/cases/03-furtiture-virtual/before.webp",
+    after: "/cases/03-furtiture-virtual/after.webp",
   },
   {
     id: 3,
     badge: "2D to 3D Pipeline",
     title: "Из плана в 3D",
     description: "Трансформация технического чертежа в объемную визуализацию для быстрого согласования концепта.",
-    before: "/cases/02-2d-to-3d/2d.jpeg",
-    after: "/cases/02-2d-to-3d/3d.jpeg",
-    thumbnailImage: "/cases/02-2d-to-3d/tmbl.jpg",
+    before: "/cases/02-2d-to-3d/2d.webp",
+    after: "/cases/02-2d-to-3d/3d.webp",
+    thumbnailImage: "/cases/02-2d-to-3d/tmbl.webp",
   },
   {
     id: 4,
     badge: "Light Scenarios",
     title: "Смена освещения",
     description: "4 сценария света за один запуск. Мгновенная проверка атмосферы: от утреннего солнца до вечернего уюта.",
-    before: "/cases/04-light/1.jpeg",
-    after: "/cases/04-light/2.jpg",
+    before: "/cases/04-light/1.webp",
+    after: "/cases/04-light/2.webp",
     slides: [
-      "/cases/04-light/1.jpeg",
-      "/cases/04-light/2.jpg",
-      "/cases/04-light/3.jpeg",
-      "/cases/04-light/4.jpeg",
-      "/cases/04-light/5.jpeg",
+      "/cases/04-light/1.webp",
+      "/cases/04-light/2.webp",
+      "/cases/04-light/3.webp",
+      "/cases/04-light/4.webp",
+      "/cases/04-light/5.webp",
     ],
   },
   {
@@ -342,8 +431,14 @@ const CASES = [
     badge: "Material Swap",
     title: "Замена материалов",
     description: "«Мрамор или дерево?» — решайте за 5 минут. Локальная замена текстур без перегенерации всего кадра.",
-    before: "https://images.unsplash.com/photo-1536376074432-cd2025170ad0?w=1600&q=80",
-    after: "https://images.unsplash.com/photo-1505691938895-1758d7eaa511?w=1600&q=80",
+    before: "/cases/05-replace/1.webp",
+    after: "/cases/05-replace/2.webp",
+    slides: [
+      "/cases/05-replace/1.webp",
+      "/cases/05-replace/2.webp",
+      "/cases/05-replace/3.webp",
+      "/cases/05-replace/4.webp",
+    ],
   }
 ];
 
@@ -384,6 +479,8 @@ export const BeforeAfterCases: React.FC = () => {
                 />
               ) : item.id === 4 ? (
                 <LightScenariosCard {...item} />
+              ) : item.id === 5 ? (
+                <MaterialSwapCard {...item} />
               ) : (
                 <BeforeAfterSlider {...item} />
               )}
