@@ -72,12 +72,16 @@ jobs:
           chmod 600 ~/.ssh/id_ed255
           ssh-keyscan -H ${{ secrets.BEGET_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Sync files to server
+      - name: Deploy to server
         run: |
           rsync -avz --delete \
+            --exclude '.ssh' \
+            --exclude '.bash_history' \
+            --exclude '.cache' \
+            --exclude 'cgi-bin' \
             -e "ssh -o StrictHostKeyChecking=no" \
             dist/ \
-            ${{ secrets.BEGET_USER }}@${{ secrets.BEGET_HOST }}:${{ secrets.BEGET_PATH }}
+            ${{ secrets.BEGET_USER }}@${{ secrets.BEGET_HOST }}:~/
 
       - name: Deployment status
         run: |
