@@ -4,7 +4,6 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { PainPoints } from './components/PainPoints';
 import { Solution } from './components/Solution';
-import { TryIt } from './components/TryIt';
 import { BeforeAfterCases } from './components/BeforeAfterCases';
 import { Audience } from './components/Audience';
 import { CourseProgram } from './components/CourseProgram';
@@ -94,7 +93,6 @@ const App: React.FC = () => {
         <Hero />
         <PainPoints />
         <Solution />
-        <TryIt />
         <BeforeAfterCases />
         <Audience />
         <CourseProgram />
