@@ -72,7 +72,12 @@ jobs:
 
       - name: Deploy to server
         run: |
-          rsync -avz --delete \
+          rsync -rz --delete \
+            --omit-dir-times \
+            --no-times \
+            --no-perms \
+            --no-owner \
+            --no-group \
             --exclude '.ssh' \
             --exclude '.bash_history' \
             --exclude '.cache' \
