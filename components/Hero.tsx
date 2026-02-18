@@ -425,25 +425,25 @@ const HeroInner: React.FC = () => {
         <Background variant={BackgroundVariant.Dots} gap={40} size={2.5} color={isDarkMode ? "#1f1f23" : "#d1d5db"} />
       </ReactFlow>
       <div className="absolute inset-y-0 right-4 md:right-6 z-40 pointer-events-none">
-        <div className="sticky top-1/2 -translate-y-1/2 w-12 rounded-2xl overflow-hidden bg-white/18 dark:bg-white/8 backdrop-blur-2xl backdrop-saturate-200 border border-white/30 dark:border-white/20 shadow-[0_18px_45px_rgba(0,0,0,0.28)] pointer-events-auto">
+        <div className="sticky top-1/2 -translate-y-1/2 h-12 w-12 rounded-2xl overflow-hidden bg-white/18 dark:bg-white/8 backdrop-blur-2xl backdrop-saturate-200 border border-white/30 dark:border-white/20 shadow-[0_18px_45px_rgba(0,0,0,0.28)] pointer-events-auto">
           <button
             onClick={handleViewportToggle}
             aria-label={shouldResetViewport ? 'Вернуть вид по умолчанию' : 'Сфокусироваться на первой ноде'}
             title={shouldResetViewport ? 'Вернуть вид по умолчанию' : 'Сфокусироваться на первой ноде'}
-            className="group relative h-12 w-12 bg-white/8 text-zinc-700 transition-colors hover:bg-white/20 hover:text-[#f25151] dark:bg-white/[0.03] dark:text-zinc-300 dark:hover:bg-white/[0.08]"
+            className="group relative flex h-full w-full items-center justify-center leading-none bg-white/8 text-zinc-700 transition-colors hover:bg-white/20 dark:bg-white/[0.03] dark:text-zinc-300 dark:hover:bg-white/[0.08]"
           >
-            <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <span className="pointer-events-none inline-flex h-7 w-7 items-center justify-center">
               {shouldResetViewport ? (
                 <LayoutDashboard
                   size={24}
                   strokeWidth={2.2}
-                  className="block -translate-y-px transition-transform duration-200 group-hover:scale-110"
+                  className="block transition-all duration-200 group-hover:scale-110 group-hover:text-[#f25151]"
                 />
               ) : (
                 <Fullscreen
                   size={24}
                   strokeWidth={2.2}
-                  className="block -translate-y-px transition-transform duration-200 group-hover:scale-110"
+                  className="block transition-all duration-200 group-hover:scale-110 group-hover:text-[#f25151]"
                 />
               )}
             </span>
