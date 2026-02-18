@@ -29,6 +29,7 @@ import {
   Loader2,
   Ratio,
   Maximize,
+  Fullscreen,
   LayoutDashboard,
   Mouse,
   Zap,
@@ -365,6 +366,7 @@ const HeroInner: React.FC = () => {
       );
     });
   }, [getIdealNodes, loading, nodes, progress, windowWidth]);
+  const shouldResetViewport = isOfferFocused || !isLayoutAligned;
 
   useEffect(() => {
     const ideal = getIdealNodes(windowWidth, loading, progress);
@@ -384,32 +386,28 @@ const HeroInner: React.FC = () => {
   }, [windowWidth, fitView, getIdealNodes]);
 
   const handleViewportToggle = useCallback(() => {
-    if (!isLayoutAligned) {
+    if (shouldResetViewport) {
       const alignedNodes = getIdealNodes(windowWidth, loading, progress);
-      setNodes(alignedNodes);
+      if (!isLayoutAligned) {
+        setNodes(alignedNodes);
+      }
       fitView({ padding: 0.15, duration: 600 });
       setIsOfferFocused(false);
       return;
     }
 
-    if (!isOfferFocused) {
-      const offerNode = nodes.find((node) => node.id === '1');
-      if (offerNode) {
-        fitView({
-          nodes: [offerNode],
-          padding: 0.22,
-          duration: 600,
-          minZoom: 0.55,
-          maxZoom: 1.2,
-        });
-        setIsOfferFocused(true);
-        return;
-      }
+    const offerNode = nodes.find((node) => node.id === '1');
+    if (offerNode) {
+      fitView({
+        nodes: [offerNode],
+        padding: 0.22,
+        duration: 600,
+        minZoom: 0.55,
+        maxZoom: 1.2,
+      });
+      setIsOfferFocused(true);
     }
-
-    fitView({ padding: 0.2, duration: 600 });
-    setIsOfferFocused(false);
-  }, [fitView, getIdealNodes, isLayoutAligned, isOfferFocused, loading, nodes, progress, setNodes, windowWidth]);
+  }, [fitView, getIdealNodes, isLayoutAligned, loading, nodes, progress, setNodes, shouldResetViewport, windowWidth]);
 
   useEffect(() => {
     setNodes((nds) => nds.map((n) => n.id === '5' ? { ...n, data: { ...n.data, loading, progress } } : n));
@@ -430,11 +428,15 @@ const HeroInner: React.FC = () => {
         <div className="sticky top-1/2 -translate-y-1/2 w-12 rounded-2xl overflow-hidden bg-white/18 dark:bg-white/8 backdrop-blur-2xl backdrop-saturate-200 border border-white/30 dark:border-white/20 shadow-[0_18px_45px_rgba(0,0,0,0.28)] pointer-events-auto">
           <button
             onClick={handleViewportToggle}
-            aria-label="Выровнять ноды"
-            title="Выровнять ноды"
+            aria-label={shouldResetViewport ? 'Вернуть вид по умолчанию' : 'Сфокусироваться на первой ноде'}
+            title={shouldResetViewport ? 'Вернуть вид по умолчанию' : 'Сфокусироваться на первой ноде'}
             className="group w-12 h-12 flex items-center justify-center bg-white/8 dark:bg-white/[0.03] hover:bg-white/20 dark:hover:bg-white/[0.08] text-zinc-700 dark:text-zinc-300 hover:text-[#f25151] transition-colors"
           >
-            <LayoutDashboard size={20} className="transition-colors group-hover:text-[#f25151]" />
+            {shouldResetViewport ? (
+              <LayoutDashboard size={20} className="transition-colors group-hover:text-[#f25151]" />
+            ) : (
+              <Fullscreen size={20} className="transition-colors group-hover:text-[#f25151]" />
+            )}
           </button>
         </div>
       </div>
